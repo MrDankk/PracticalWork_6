@@ -10,12 +10,18 @@ namespace PracticalWork_6
             MenuSelection();
         }
 
+        /// <summary>
+        /// Управление выбором в меню
+        /// </summary>
         static void MenuSelection()
         {
             bool menuActive = true;
+            string path = "Workers.txt";
 
             while (menuActive)
             {
+                FileInfo fileInfo = new FileInfo(path);
+
                 Console.WriteLine("\nУправление : " +
                                   "\n1 - Показать всех сотрудников" +
                                   "\n2 - Добавить нового сотрудника" +
@@ -32,10 +38,17 @@ namespace PracticalWork_6
                 switch (inputSelection)
                 {
                     case 1:
-                        OutputInformations();
+
+                        if(!fileInfo.Exists)
+                        {
+                            FileStream fileStream = new FileStream(path, FileMode.Create);
+                            fileStream.Close();
+                        }
+
+                        OutputInformations(path);
                         break;
                     case 2:
-                        NewWorker();
+                        NewWorker(path);
                         break;
                     case 0:
                         menuActive = false;
@@ -47,17 +60,25 @@ namespace PracticalWork_6
             }
         }
 
-        static void NewWorker()
+        /// <summary>
+        /// Добавление нового сотрудника
+        /// </summary>
+        /// <param name="path"> Путь к файлу </param>
+        static void NewWorker(string path)
         {
             string[] dataArray = ArrayFilling();
             string data = string.Join("#", dataArray);
 
-            using (StreamWriter sw = new StreamWriter("Workers.txt", true))
+            using (StreamWriter sw = new StreamWriter(path, true))
             {
                 sw.WriteLine(data);
             }
         }
 
+        /// <summary>
+        /// Создание массива данных сотрудника
+        /// </summary>
+        /// <returns></returns>
         static string[] ArrayFilling()
         {
             string [] dataArray = new string[7];
@@ -77,6 +98,11 @@ namespace PracticalWork_6
             return dataArray;
         }
 
+        /// <summary>
+        /// Ввод данных пользователем
+        /// </summary>
+        /// <param name="ID"> Номер заполняемой строки </param>
+        /// <returns></returns>
         static string InputData(int ID)
         {
             string title = VariableName(ID);
@@ -97,6 +123,11 @@ namespace PracticalWork_6
             }
         }
 
+        /// <summary>
+        /// Обработка номера строки
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns> Текстовое обозначение строки </returns>
         static string VariableName(int ID)
         {
             string title = "";
@@ -127,14 +158,18 @@ namespace PracticalWork_6
             return title;
         }
 
-        static void OutputInformations()
+        /// <summary>
+        /// Вывод информации о сотрудниках
+        /// </summary>
+        /// <param name="path"> Путь к файлу </param>
+        static void OutputInformations(string path)
         {
-            using(StreamReader sr = new StreamReader("Workers.txt"))
+            using(StreamReader sr = new StreamReader(path))
             {
                 string line;
                 Console.WriteLine("Сотрудники:");
 
-                while((line = sr.ReadLine()) != null)
+                while ((line = sr.ReadLine()) != null)
                 {
                     string[] dataArray = line.Split('#');
 
@@ -146,6 +181,7 @@ namespace PracticalWork_6
                         Console.WriteLine($"{title} {dataArray[i]}");
                     }
                 }
+
             }
         }
     }
